@@ -23,7 +23,7 @@ library(sp)
 library(sf)
 ```
 
-#import vector shapefile containing deposit locations
+#import vector shapefile
 
 ```{r}
 au_locs<-  st_read("C:/Users/user/OneDrive/Documents/Git/Fry/Gold_occurrences.shp")
