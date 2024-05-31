@@ -1,0 +1,120 @@
+---
+title: "Fry Analysis"
+author: "FBJ"
+date: "2024-05-31"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+library(rgdal)
+```
+
+```{r}
+library(sp)
+```
+
+```{r}
+library(sf)
+```
+
+#import vector shapefile
+
+```{r}
+au_locs<-  st_read("C:/Users/user/OneDrive/Documents/Git/Fry/Gold_occurrences.shp")
+```
+
+```{r}
+str(au_locs)
+```
+
+```{r}
+head(au_locs)
+```
+
+```{r}
+x<- au_locs$x
+```
+
+```{r}
+y <- au_locs$y
+```
+
+```{r}
+data <- data.frame(x,y)
+```
+
+```{r}
+head(data)
+```
+
+#create vector to store ouptut
+
+```{r}
+result_x <- c()
+```
+
+```{r}
+result_y <- c()
+```
+
+# Loop through each record in x and y to perform the subtraction using each location as the centre point
+
+```{r}        
+for (i in 1:nrow(data)) {
+  for (j in 1:nrow(data)) {
+    diff_x <- data$x[i] - data$x[j]
+    diff_y <- data$y[i] - data$y[j]
+      if (!(diff_x == 0 && diff_y == 0)) {
+      result_x <- c(result_x, diff_x)
+      result_y <- c(result_y, diff_y)
+    }
+ }
+}
+```
+
+#centering the fry points on the original gold occurrences
+
+```{r}
+fry_pts <- data.frame(x = result_x+mean(data$x), y = result_y+mean(data$y))
+```
+
+#convert fry points to a spatial feature
+
+```{r}
+fry_pts_sp <- st_as_sf(fry_pts, coords = c("x", "y"))
+```
+
+#assign coordinate system to the fry points shapefile
+
+```{r}     
+st_crs(fry_pts_sp) <- st_crs(au_locs)
+```
+
+```{r}
+str(fry_pts_sp)
+```
+
+#plot the original gold occurrences and the fry points
+
+```{r}
+library(ggplot2)
+```
+
+```{r}
+ggplot()+
+  theme_bw()+
+  theme(panel.grid.major = element_blank())+
+  geom_sf (data=au_locs, aes(col="black"))+
+  geom_sf(data=fry_pts_sp, aes(col="red"))+
+  scale_color_identity(labels=c(black="Gold Occurrences", red="Fry Points"), guide="legend")+
+   theme(plot.title = element_text(hjust= 0.5))+
+  theme(axis.text.y = element_text(angle = 88))+
+  ggtitle ("Fry Plot")+
+  coord_sf()
+```
