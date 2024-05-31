@@ -63,7 +63,3 @@ ggplot()+
   ggtitle ("Fry Plot")+
   coord_sf()
 
-
-https://github.com/fbj34/Fry-Analysis.git
-
-C:\Users\user\OneDrive\Documents\Git\Fry
